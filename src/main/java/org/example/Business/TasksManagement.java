@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Business;
 
 public class TasksManagement {
 }
