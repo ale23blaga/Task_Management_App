@@ -11,7 +11,10 @@ public class SimpleTask extends Task {
     }
 
     public int estimateDuration(){
-        return endHour - startHour;
+        if (startHour < endHour)
+            return endHour - startHour;
+        else
+            return 24 - startHour + endHour;
     }
 
     public int getStartHour() {
