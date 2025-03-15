@@ -1,17 +1,18 @@
 package org.example.DataModel;
 
-public class SimpleTask extends Task {
+public non-sealed class SimpleTask extends Task {
     private int startHour;
     private int endHour;
 
-    public SimpleTask(int idTask, String statusTask, int startHour, int endHour) {
-        super(idTask, statusTask);
+    public SimpleTask(int idTask, int startHour, int endHour) {
+        super(idTask);
         this.startHour = startHour;
         this.endHour = endHour;
     }
 
+    @Override
     public int estimateDuration(){
-        if (startHour < endHour)
+        if (startHour <= endHour)
             return endHour - startHour;
         else
             return 24 - startHour + endHour;

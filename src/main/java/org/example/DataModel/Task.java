@@ -1,15 +1,18 @@
 package org.example.DataModel;
 
-abstract public class Task implements Comparable<Task> {
+import java.io.Serializable;
+import java.util.Objects;
+
+sealed abstract public class Task implements Serializable permits SimpleTask, ComplexTask{
     private int idTask;
     private String statusTask;
 
-    abstract int estimateDuration();
-
-    public Task(int idTask, String statusTask) {
+    public Task(int idTask) {
         this.idTask = idTask;
-        this.statusTask = statusTask;
+        this.statusTask = "Uncompleted";
     }
+
+    abstract int estimateDuration();
 
     public int getIdTask() {
         return idTask;
@@ -23,8 +26,24 @@ abstract public class Task implements Comparable<Task> {
         this.idTask = idTask;
     }
 
-    public void setStatusTask(String statusTask) {
-        this.statusTask = statusTask;
+    public void modifyStatus() {
+        if (this.getStatusTask().equals("Completed"))
+            this.statusTask = "Uncompleted";
+        else this.statusTask = "Completed";
+    }
+
+    //For serialization
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return idTask == task.idTask;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idTask);
     }
 
     //trebe sa fie incarcat pe git
