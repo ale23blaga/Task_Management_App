@@ -1,9 +1,6 @@
-package org.example;
+package org.example.GUI;
 
 import org.example.BusinessLogic.TasksManagement;
-import org.example.DataModel.Employee;
-import org.example.DataModel.SimpleTask;
-import org.example.GUI.TaskManagementGUI;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -11,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         TasksManagement controller = new TasksManagement();
 
-        // Add some dummy employees & tasks
+        //
 //        Employee emp1 = new Employee( "Alice", 1);
 //        Employee emp2 = new Employee( "Bob", 2);
 //

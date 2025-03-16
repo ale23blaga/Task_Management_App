@@ -12,6 +12,8 @@ public non-sealed class ComplexTask extends Task {
 
     @Override
     public int estimateDuration(){
+        if (subTasks.isEmpty())
+            return 0;
         return subTasks.stream().mapToInt(Task::estimateDuration).sum();
     }
 

@@ -4,24 +4,27 @@ import org.example.DataModel.ComplexTask;
 import org.example.DataModel.Employee;
 import org.example.DataModel.SimpleTask;
 import org.example.DataModel.Task;
+import org.example.DataAccess.DataS;
 
 import java.io.*;
 import java.util.*;
 
 public class TasksManagement {
     private Map<Employee, List<Task>> employeeTasks = new HashMap<>();
-
     private Map<Integer, Task> tasksMap = new HashMap<>();
     private Map<Integer, Employee> employeesMap = new HashMap<>();
 
-    //Serialization
-    private static final String employeeFile = "employees.ser";
-    private static final String taskFile = "tasks.ser";
-    private static final String assignmentsFile = "assignments.ser";
 
-    //Constructor
+
+    //Loading data from serialization files
     public TasksManagement() {
-        loadData();
+        DataS.loadData(employeesMap, tasksMap, employeeTasks);
+    }
+
+    //saving data in serialization files
+    public void saveDataFromTaskManagement()
+    {
+        DataS.saveData(employeesMap, tasksMap, employeeTasks);
     }
 
     public Map<Employee, List<Task>> getEmployeeTasks() {
@@ -31,7 +34,7 @@ public class TasksManagement {
     //Working with the employeeMap
     public void addEmployee(Employee employee) {
         employeesMap.put(employee.getIdEmployee(), employee);
-        saveData();
+        saveDataFromTaskManagement();
     }
 
     public List<Employee> getAllEmployees() {
@@ -44,7 +47,7 @@ public class TasksManagement {
 
     public void addTask(Task task) {
         tasksMap.put(task.getIdTask(), task);
-        saveData();
+        saveDataFromTaskManagement();
     }
 
     //Working with the taskMap
@@ -56,118 +59,64 @@ public class TasksManagement {
         return tasksMap.get(taskId);
     }
 
+    //Asign task to employee
+    public void assignTaskToEmployee(int idEmployee, Task task){
+        Employee employee = getEmployeeById(idEmployee);
+        employeeTasks.computeIfAbsent(employee, k -> new ArrayList<>()).add(task);
+        saveDataFromTaskManagement();
+    }
+
     public List<Task> getTasksByEmployeeId(int employeeId) {
         return employeeTasks.getOrDefault(getEmployeeById(employeeId), new ArrayList<>());
     }
 
-    public void assignTaskToEmployee(int idEmployee, Task task){
-        Employee employee = getEmployeeById(idEmployee);
-        employeeTasks.computeIfAbsent(employee, k -> new ArrayList<>()).add(task);
-        saveData();
-    }
-
+    //Calculates the work hours for an employee
     public int calculateEmployeeWorkDuration(int idEmployee){
         Employee employee = getEmployeeById(idEmployee);
-        List<Task> employeesTaskList = employeeTasks.get(employee);
-        return calculateTasksWorkDuration(employeesTaskList);
+        List<Task> employeeTaskList = employeeTasks.get(employee);
+        return totalWorkHoursInList(employeeTaskList);
     }
 
+    //Calculates the work hours in a list
+    private int totalWorkHoursInList(List<Task> tasks) {
+        if (tasks == null) return 0;
+        int totalWorkHours = 0;
+        for(Task task : tasks){
+            if (task instanceof SimpleTask && task.getStatusTask().equals("Completed")){
+                totalWorkHours += ((SimpleTask)task).estimateDuration();
+            } else if (task instanceof ComplexTask){
+                totalWorkHours += totalWorkHoursInList(((ComplexTask) task).getTasks());
+            }
+        }
+        return totalWorkHours;
+    }
+
+    //Modifies status for a task from an employee looking through their list of tasks
     public void modifyTaskStatus(int idEmployee, int idTask){
         Employee employee = getEmployeeById(idEmployee);
         List<Task> employeesTaskList = employeeTasks.get(employee);
-        modifyTaskFromList(employeesTaskList, idTask); // schimba statusul la un task dintr-o lista
-        saveData();
+
+        if (employeesTaskList != null) {
+            boolean updated = modifyTaskFromList(employeesTaskList, idTask);
+            if (updated) {
+                saveDataFromTaskManagement();
+            }
+        }
     }
 
-    // functiile de mai jos presupun ca ar trebui sa mearga in utility sau ceva
-    private void modifyTaskFromList(List<Task> tasks, int idTask)
-    {
+    //Modifies a task from a given list of tasks (even if it is a subtask in a complex task)
+    private boolean modifyTaskFromList(List<Task> tasks, int idTask) {
         for (Task task : tasks) {
             if (task.getIdTask() == idTask) {
                 task.modifyStatus();
-                return;
+                return true;
             }
             else // daca nu ne uitam ori mai jos in taskul complex, ori prin cele simple
             if (task instanceof ComplexTask) {
-                modifyTaskFromList(((ComplexTask) task).getTasks(), idTask);
+                boolean updated = modifyTaskFromList(((ComplexTask) task).getTasks(), idTask);
+                if (updated) return true;
             }
         }
+        return false;
     }
-
-    private int calculateTasksWorkDuration(List<Task> tasks)
-    {
-        int total =  0;
-        for( Task task : tasks )
-        {
-            if (task instanceof ComplexTask)
-            {
-                total += calculateTasksWorkDuration(((ComplexTask) task).getTasks());
-            }
-            else
-            {
-                if (task.getStatusTask().equals("Completed"))
-                {
-                    total += ((SimpleTask) task).estimateDuration();
-                }
-            }
-        }
-        return total;
-    }
-
-    //Serialization
-    public void saveData()
-    {
-        try (ObjectOutputStream empOut = new ObjectOutputStream(new FileOutputStream(employeeFile));
-             ObjectOutputStream taskOut = new ObjectOutputStream(new FileOutputStream(taskFile));
-             ObjectOutputStream assignmentOut = new ObjectOutputStream(new FileOutputStream(assignmentsFile))) {
-            empOut.writeObject(employeesMap);
-            taskOut.writeObject(tasksMap);
-            assignmentOut.writeObject(employeeTasks);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadData()
-    {
-        try (ObjectInputStream empIn = new ObjectInputStream(new FileInputStream(employeeFile));
-             ObjectInputStream taskIn = new ObjectInputStream(new FileInputStream(taskFile));
-             ObjectInputStream assignmentIn = new ObjectInputStream(new FileInputStream(assignmentsFile))) {
-
-            employeesMap = (Map<Integer, Employee>) empIn.readObject();
-            Map<Integer, Task> oldTasksMap = (Map<Integer, Task>) taskIn.readObject();
-            Map<Employee, List<Task>> oldEmployeeTasks = (Map<Employee, List<Task>>) assignmentIn.readObject();
-
-            employeeTasks = new HashMap<>();
-            tasksMap = new HashMap<>();
-
-            //Handling the task serialization between the assigned tasks and the task list so that we don't have different obects with the same values and everything else.
-            for (Employee oldEmployee : oldEmployeeTasks.keySet()) {
-                Employee newEmployee = employeesMap.get(oldEmployee.getIdEmployee());
-                if (newEmployee != null) {
-                    List<Task> existingAssignedTasks = oldEmployeeTasks.getOrDefault(newEmployee, new ArrayList<>());
-
-                    for (Task oldTask : oldEmployeeTasks.get(oldEmployee)) {
-                        if (!existingAssignedTasks.contains(oldTask)) {
-                            existingAssignedTasks.add(oldTask);
-                        }
-                    }
-                    employeeTasks.put(newEmployee, existingAssignedTasks); // Keeping the same tasks in the assigned task list
-                    for(Task task: existingAssignedTasks)
-                    {
-                        tasksMap.putIfAbsent(task.getIdTask(), task); //Keeping the same, pottentialy assigned, tasks in the taskMap
-                    }
-                }
-            }
-            for(Task task: oldTasksMap.values()) {
-                tasksMap.putIfAbsent(task.getIdTask(), task); //Putting the rest of unassigned tasks in the taskMap
-            }
-
-        } catch (IOException | ClassNotFoundException e) {
-            employeesMap = new HashMap<>();
-            tasksMap = new HashMap<>();
-            employeeTasks = new HashMap<>();
-        }
-    }
-
 }

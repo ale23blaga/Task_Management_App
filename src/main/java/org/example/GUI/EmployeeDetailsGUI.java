@@ -46,6 +46,8 @@ public class EmployeeDetailsGUI extends JFrame {
         taskStatsPanel.add(new JLabel("Task Count"));
         taskStatsPanel.add(new JLabel("Completed: " + tasksCount.get("Completed")));
         taskStatsPanel.add(new JLabel("Uncompleted: " + tasksCount.get("Uncompleted")));
+        //Worked hours
+        taskStatsPanel.add(new JLabel("Worked Hours: " + controller.calculateEmployeeWorkDuration(employee.getIdEmployee())));
         add(taskStatsPanel, BorderLayout.SOUTH);
 
         setVisible(true);

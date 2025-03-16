@@ -38,12 +38,15 @@ public class TaskDetailsGUI extends JFrame {
         }
         else
         {
-            String[] columns = {"Task ID", "Task Type", "Task Status"};
+            String[] columns = {"Task ID", "Task Type", "Task Status" , "Estimate work duration"};
             DefaultTableModel taskTableModel = new DefaultTableModel(columns, 0);
             List<Task> subTasks = ((ComplexTask)task).getTasks();
             for(Task subTask : subTasks)
             {
-                taskTableModel.addRow(new Object[]{task.getIdTask(), task.getClass().getSimpleName(), task.getStatusTask()});
+                if (subTask instanceof SimpleTask)
+                    taskTableModel.addRow(new Object[]{subTask.getIdTask(), subTask.getClass().getSimpleName(), subTask.getStatusTask(), ((SimpleTask) subTask).estimateDuration()});
+                else
+                    taskTableModel.addRow(new Object[]{subTask.getIdTask(), subTask.getClass().getSimpleName(), subTask.getStatusTask(), ((ComplexTask) subTask).estimateDuration()});
             }
             JTable table = new JTable(taskTableModel);
             add(new JLabel("SubTasks:"), BorderLayout.CENTER);
