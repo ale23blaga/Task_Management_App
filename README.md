@@ -5,12 +5,12 @@ The **Task Management App** is a Java-based application that allows users to man
 
 
 ## Feautures
--Manage employees
--Add, assign, and modify tasks
--Handle complex and simple tasks
--View statistics on employees
--Save and load app data using serialization
--Graphical User Interface (GUI) for user interaction
+- Manage employees
+- Add, assign, and modify tasks
+- Handle complex and simple tasks
+- View statistics on employees
+- Save and load app data using serialization
+- Graphical User Interface (GUI) for user interaction
 
 ## Tehcnologies used
 - **Porgraming Language:** Java
