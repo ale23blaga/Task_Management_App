@@ -1,4 +1,4 @@
-package org.example.GUI;
+package org.example.GraphicalUserInterface;
 
 import org.example.BusinessLogic.TasksManagement;
 

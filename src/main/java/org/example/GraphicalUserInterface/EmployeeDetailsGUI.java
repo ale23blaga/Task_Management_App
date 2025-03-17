@@ -1,4 +1,4 @@
-package org.example.GUI;
+package org.example.GraphicalUserInterface;
 
 import org.example.BusinessLogic.TasksManagement;
 import org.example.BusinessLogic.Utility;
@@ -41,7 +41,7 @@ public class EmployeeDetailsGUI extends JFrame {
         add(new JScrollPane(taskTable), BorderLayout.CENTER);
 
         //completed and uncompleted task count
-        Map<String, Integer> tasksCount = Utility.countCompletedAndUncompletedTasks(controller.getEmployeeTasks(), employee);
+        Map<String, Integer> tasksCount = Utility.countCompletedAndUncompletedTasks(controller.getEmployeeTasksMap(), employee);
         JPanel taskStatsPanel = new JPanel();
         taskStatsPanel.add(new JLabel("Task Count"));
         taskStatsPanel.add(new JLabel("Completed: " + tasksCount.get("Completed")));

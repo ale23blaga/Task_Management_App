@@ -1,7 +1,6 @@
-package org.example.GUI;
+package org.example.GraphicalUserInterface;
 
 import org.example.BusinessLogic.TasksManagement;
-import org.example.DataAccess.DataS;
 import org.example.DataModel.ComplexTask;
 import org.example.DataModel.Employee;
 import org.example.DataModel.SimpleTask;
@@ -29,7 +28,7 @@ public class TaskManagementGUI extends JFrame {
         addTaskButton = new JButton("Add Task");
         assignButton = new JButton("Assign Task");
         addSubTaskButton = new JButton("Add Sub Tasks");
-        modifyTaskStatusButton = new JButton("Modify Task");
+        modifyTaskStatusButton = new JButton("Modify Task Status");
         topPanel.add(addEmployeeButton);
         topPanel.add(addTaskButton);
         topPanel.add(assignButton);

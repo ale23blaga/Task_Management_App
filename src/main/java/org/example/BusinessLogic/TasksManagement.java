@@ -6,7 +6,6 @@ import org.example.DataModel.SimpleTask;
 import org.example.DataModel.Task;
 import org.example.DataAccess.DataS;
 
-import java.io.*;
 import java.util.*;
 
 public class TasksManagement {
@@ -27,7 +26,7 @@ public class TasksManagement {
         DataS.saveData(employeesMap, tasksMap, employeeTasks);
     }
 
-    public Map<Employee, List<Task>> getEmployeeTasks() {
+    public Map<Employee, List<Task>> getEmployeeTasksMap() {
         return employeeTasks;
     }
 
@@ -45,12 +44,12 @@ public class TasksManagement {
         return employeesMap.get(employeeId);
     }
 
+    //Working with the taskMap
     public void addTask(Task task) {
         tasksMap.put(task.getIdTask(), task);
         saveDataFromTaskManagement();
     }
 
-    //Working with the taskMap
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasksMap.values());
     }
@@ -109,6 +108,12 @@ public class TasksManagement {
         for (Task task : tasks) {
             if (task.getIdTask() == idTask) {
                 task.modifyStatus();
+                if(task instanceof ComplexTask){
+                    for(Task subTask : ((ComplexTask) task).getTasks()){
+                        if(task.getStatusTask().equals("Completed") && subTask.getStatusTask().equals("Uncompleted"))
+                            modifyTaskFromList(((ComplexTask) task).getTasks(), subTask.getIdTask());
+                    }
+                }
                 return true;
             }
             else // daca nu ne uitam ori mai jos in taskul complex, ori prin cele simple

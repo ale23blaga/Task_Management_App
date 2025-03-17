@@ -1,4 +1,4 @@
-package org.example.GUI;
+package org.example.GraphicalUserInterface;
 
 import org.example.BusinessLogic.TasksManagement;
 import org.example.BusinessLogic.Utility;
@@ -21,7 +21,7 @@ public class StatisticsGUI extends JFrame {
         String[] columns1 = {"EmployeeId", "Name", "Completed Tasks", "Uncompleted Tasks"};
         DefaultTableModel model1 = new DefaultTableModel(columns1, 0);
         for (Employee employee : controller.getAllEmployees()){
-            Map<String, Integer> statisticsForEmployee = Utility.countCompletedAndUncompletedTasks(controller.getEmployeeTasks(), employee);
+            Map<String, Integer> statisticsForEmployee = Utility.countCompletedAndUncompletedTasks(controller.getEmployeeTasksMap(), employee);
             model1.addRow(new Object[]{employee.getIdEmployee(), employee.getName(),statisticsForEmployee.get("Completed"),statisticsForEmployee.get("Uncompleted")});
 
         }
