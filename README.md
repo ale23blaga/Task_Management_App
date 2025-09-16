@@ -44,4 +44,5 @@ The **Task Management App** is a Java-based application that allows users to man
 - Use Case Diagram
 
 ## Contributors
-- Blaga Alexandra
+
+- [Blaga Alexandra](https://github.com/ale23blaga)
